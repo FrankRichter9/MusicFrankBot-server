@@ -3,8 +3,8 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 
 import { createClient } from 'redis';
-
-const client = createClient();
+console.log('process.env.REDIS_HOST', process.env.REDIS_HOST)
+const client = createClient({ url: 'redis://redis:6379' });
 
 client.on('error', (err) => console.log('Redis Client Error', err));
 
@@ -44,6 +44,13 @@ app.post('/search-videos', async function (req, res) {
     }
     const videosArr = await videos(search)
     res.send(videosArr)
+})
+
+app.post('/skip', async function (req, res) {
+    console.log(req.body)
+
+    publisher.publish('bot', 'skip');
+    res.send('ok')
 })
 
 import yts from 'yt-search'
